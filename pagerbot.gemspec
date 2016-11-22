@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = 'pagerbot'
-  spec.version       = '0.3.0'
+  spec.version       = '0.4.0'
   spec.authors       = ['Karl-Aksel Puulmann']
   spec.email         = ['oxymaccy@gmail.com']
   spec.summary       = %q{IRC and Slackbot for PagerDuty.}
@@ -23,10 +23,13 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'chronic_duration'
   spec.add_dependency 'cinch'
   spec.add_dependency 'configatron'
+  spec.add_dependency 'eventmachine' # used by slack-ruby-client
+  spec.add_dependency 'faye-websocket' # used by slack-ruby-client
   spec.add_dependency 'mailgun-ruby'
   spec.add_dependency 'method_decorators'
-  spec.add_dependency 'rest-client'
+  spec.add_dependency 'rest-client', '< 2.0.0'
   spec.add_dependency 'sinatra'
+  spec.add_dependency 'slack-ruby-client'
   spec.add_dependency 'thin'
   spec.add_dependency 'mongo'
   spec.add_dependency 'bson_ext'

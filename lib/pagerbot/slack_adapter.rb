@@ -1,74 +1,71 @@
-# slack webhook-using integration for pagerbot
-
 require 'json'
 require 'sinatra/base'
-require 'rest-client'
+require 'slack-ruby-client'
 
 module PagerBot
-  class SlackAdapter < Sinatra::Base
-    def emoji
-      configatron.bot.slack.emoji || ":frog:"
+  class SlackAdapter
+    def self.run!
+      PagerBot::SlackAdapter.new().run()
     end
 
-    def send_private_message(message, user_id)
-      data = {
-        username: configatron.bot.name,
-        icon_emoji: emoji,
-        text: message,
-        channel: user_id,
-        token: configatron.bot.slack.api_token
-      }
-      PagerBot.log.info(data.inspect)
-
-      resp = RestClient.post "https://slack.com/api/chat.postMessage", data
-      PagerBot.log.info resp
-    end
-
-    def make_reply(answer, event_data)
-      if answer[:private_message]
-        send_private_message(answer[:private_message], event_data[:user_id])
+    def initialize
+      Slack.configure do |config|
+        config.token = configatron.bot.slack.api_token
       end
-
-      unless answer[:message]
-        return ""
+      @rtm_client = Slack::RealTime::Client.new
+      @rtm_client.on :hello do
+        @bot_user_id = @rtm_client.self.id
+        puts ("Successfully connected, welcome '#{@rtm_client.self.name}' to " +
+          "the '#{@rtm_client.team.name}' team at " +
+          "https://#{@rtm_client.team.domain}.slack.com.")
       end
-      
-      JSON.generate({
-        username: configatron.bot.name,
-        icon_emoji: emoji,
-        text: answer[:message]
-      })
+      @rtm_client.on :message do |data|
+        process_message(data)
+      end
     end
 
-    def event_data(request)
-      {
-        token: request[:token],
-        nick: request[:user_name],
-        channel_name: request[:channel_name],
-        text: request[:text],
-        user_id: request[:user_id],
+    def run
+      @rtm_client.start!
+    end
+
+    def process_message(data)
+      return if data.type != 'message'
+      return if data.subtype == 'bot_message'
+      user_id = data.user
+      user_name = @rtm_client.users.fetch(user_id).name
+      channel_id = data.channel
+      channel_name = @rtm_client.channels.fetch(channel_id).name
+      return unless configatron.bot.all_channels ||
+        configatron.bot.channels.include?(channel_name)
+      text = Slack::Messages::Formatting.unescape(data.text)
+      text.gsub!(/\A@#{@bot_user_id}/, "@#{configatron.bot.name}")
+      return unless text.match(%r{@?#{configatron.bot.name}[: ]})
+      PagerBot.log.info("Message: #{text} by #{user_name} in ##{channel_name}")
+
+      params = {
+        nick: user_name,
+        channel_name: channel_name,
+        text: text,
+        user_id: user_id,
         adapter: :slack
       }
-    end
-
-    post '/' do
-      PagerBot.log.info event_data(request)
-      if configatron.bot.slack.webhook_token
-        return "" unless request[:token] == configatron.bot.slack.webhook_token
-      end
-      unless configatron.bot.all_channels ||
-             configatron.bot.channels.include?(request[:channel_name])
-        return ""
-      end
-      return "" unless request[:text].match(%r{@?#{configatron.bot.name}[: ]})
-
-      params = event_data request
       answer = PagerBot.process(params[:text], params)
-      make_reply answer, params
+
+      if answer[:private_message]
+        send_message(answer.fetch(:private_message), user_id)
+      end
+      if answer[:message]
+        send_message(answer.fetch(:message), channel_id)
+      end
+      nil
     end
 
-    get '/ping' do
-      'pong'
+    def send_message(message, to)
+      icon_emoji = configatron.bot.slack.emoji || ":frog:"
+      resp = @rtm_client.web_client.chat_postMessage(
+        channel: to, text: message, username: configatron.bot.name,
+        icon_emoji: icon_emoji)
+      PagerBot.log.info resp
     end
   end
 end
