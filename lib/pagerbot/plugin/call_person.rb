@@ -68,7 +68,7 @@ module PagerBot::Plugins
     +PagerBot::Utilities::DispatchMethod
     def dispatch(query, event_data)
       # hacky flow since API doesn't support creating an incident directly against a user
-      # - put person on call on schedule for 3 minutes
+      # - put person on call on schedule for 5 minutes
       # - trigger incident
       person = pagerduty.find_user(query[:person], event_data[:nick])
       start = person.parse_time("now")
@@ -87,8 +87,6 @@ module PagerBot::Plugins
         },
         :content_type => :json
       )
-
-      log.info "Put #{person.name} on temporary schedule for 5 minutes. #{override}"
 
       incident = post_incident(
         :service_key => @service[:service_key],

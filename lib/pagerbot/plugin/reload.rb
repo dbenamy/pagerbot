@@ -16,7 +16,6 @@ module PagerBot::Plugins
     end
 
     def parse(query)
-      # get karl because everything is on fire
       return {} if query[:command] == "reload"
     end
 
