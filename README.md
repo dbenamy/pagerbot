@@ -17,6 +17,21 @@ The easiest way to get started is to use the Heroku button above to launch an ad
 
 Going through the admin page shouldn't take much longer than 8 minutes. The admin page also contains detailed information on how to make the bot join your channel.
 
+Modes and worker scheme
+=======================
+
+Pagerbot can be run in several modes:
+
+- `admin` mode runs the admin webface.
+- `slack` or `irc` modes connect to the respective services and don't run a web
+  server for incoming requests.
+- `hipchat` mode runs the bot with the hipchat adapter which runs a web server
+  for incoming webhooks.
+- `web` mode has it run in either admin or non-admin mode, depending on the
+  `DEPLOYED` env var. In non-admin mode it uses addition command line args or
+  config values to determine which bot type it is. This mode is only useful for
+  hipchat at this point and maybe we should deprecate it.
+
 Plugins
 =======
 
@@ -81,11 +96,11 @@ When using the admin interface, enter the same password, the username can be arb
 
 ### How can I relaunch the admin interface?
 
-Via web: 
-* [Log into heroku](https://dashboard.heroku.com/) and navigate to your application. 
-* **If it's a slackbot:** go to settings and remove DEPLOYED config variable.
-* **If it's an irc bot:** rescale your application to have 1 web worker and 0 irc workers.
+Via web:
+* [Log into heroku](https://dashboard.heroku.com/) and navigate to your application.
+* Remove the DEPLOYED config variable if present.
+* Scale web workers to 1 and the others to 0.
 
 Via command line:
-* **If it's a slackbot:** `heroku config:set DEPLOYED=false`
-* **If it's an irc bot:** `heroku ps:scale web=1 irc=0`
+* `heroku config:unset DEPLOYED`
+* `heroku ps:scale web=1 irc=0 slack=0`

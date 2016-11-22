@@ -99,6 +99,8 @@ if __FILE__ == $0
     PagerBot::AdminPage.run!
   elsif ARGV.first.include?('web')
     PagerBot.reload_configuration!
+    # Leave this for backwards compatibility, but don't use `web` for slack any
+    # more.
     if ARGV.first.include?('slack') || configatron.bot.adapter == 'slack'
       PagerBot::SlackAdapter.run!
     elsif ARGV.first.include?('hipchat') || configatron.bot.adapter == 'hipchat'
@@ -107,6 +109,9 @@ if __FILE__ == $0
   elsif ARGV.first.include? 'irc'
     PagerBot.reload_configuration!
     PagerBot::IrcAdapter.run!
+  elsif ARGV.first.include? 'slack'
+    PagerBot.reload_configuration!
+    PagerBot::SlackAdapter.run!
   else
     raise "Could not find adapter #{ARGV.first}. It must be either 'irc', 'slack' or 'hipchat'"
   end
