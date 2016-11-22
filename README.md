@@ -1,7 +1,7 @@
 PagerBot [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/stripe-contrib/pagerbot) [![Build Status](https://travis-ci.org/stripe-contrib/pagerbot.svg?branch=master)](https://travis-ci.org/stripe-contrib/pagerbot)
 ========
 
-Pagerbot is a bot that makes managing [PagerDuty](http://www.pagerduty.com/) on-call schedules easier. It currently supports IRC and Slack, and can be easily deployed to Heroku. 
+Pagerbot makes managing [PagerDuty](http://www.pagerduty.com/) on-call schedules easier. It currently supports IRC and Slack, and can be easily deployed to Heroku.
 
 Pagerbot uses [Chronic](https://github.com/mojombo/chronic) for natural language date and time parsing.
 
@@ -16,8 +16,6 @@ Usage
 The easiest way to get started is to use the Heroku button above to launch an admin interface for pagerbot, where you need to fill out a few API keys and choose commands (plugins) that pagerbot knows about and responds to.
 
 Going through the admin page shouldn't take much longer than 8 minutes. The admin page also contains detailed information on how to make the bot join your channel.
-
-To start up the admin interface again, rescale the dynos to have a single web worker and remove the DEPLOYED config variable in heroku dashboard.
 
 Plugins
 =======
@@ -72,6 +70,7 @@ FAQ
 ====
 
 ### Heroku is asking for my credit card! Do I need to pay for this?
+
 No, running your own pagerbot is free! This is a requirement of the free MongoDB add-on. See the [verification policy of Heroku](https://devcenter.heroku.com/articles/account-verification#verification-requirement).
 
 ### How can I secure the admin interface?

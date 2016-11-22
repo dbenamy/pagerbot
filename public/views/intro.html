@@ -24,17 +24,17 @@
 
 <section class="content">
   <p class="paragraph">
-    <label class="control-label">Pagerduty subdomain:</label> 
+    <label class="control-label">Pagerduty subdomain:</label>
     <input ng-model="pagerduty.subdomain" class="form-control short" />
     <span class="input-description">
       Your firms pagerduty subdomain name. Can be found by <a href="https://app.pagerduty.com/accounts/search">logging in.</a> If the url logging is that is my-startup.pagerduty.com, you should fill in in my-startup.
     </span>
   </p>
   <p class="paragraph">
-    <label class="control-label">Pagerduty API key:</label> 
+    <label class="control-label">Pagerduty API key:</label>
     <input ng-model="pagerduty.api_key" class="form-control short" />
     <span class="input-description">
-      Full access API key using which pagerbot would communicate with PagerDuty. Can be created at <a ng-href="https://{{pagerduty.subdomain || 'my-startup'}}.pagerduty.com/api_keys">{{pagerduty.subdomain || "my-startup"}}.pagerduty.com/api_keys</a> (requires admin access).
+      Full access v1 API key. Can be created at <a ng-href="https://{{pagerduty.subdomain || 'my-startup'}}.pagerduty.com/api_keys">{{pagerduty.subdomain || "my-startup"}}.pagerduty.com/api_keys</a> (requires admin access).
     </span>
   </p>
   <p class="paragraph">
@@ -45,7 +45,7 @@
 </section>
 
 <div class="continue-bar">
-  <a href ng-click="goTo('/bot-setup')" 
+  <a href ng-click="goTo('/bot-setup')"
     class="btn btn-primary pull-right"
     ng-class="{'disabled': !can_connect}">
     Continue
