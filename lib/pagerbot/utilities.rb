@@ -16,7 +16,7 @@ module PagerBot::Utilities
       end
 
       offset += resp[collection_name].length
-      break if offset >= resp[:total]
+      break if resp[:total].nil? || offset >= resp[:total]
     end
     result
   end
