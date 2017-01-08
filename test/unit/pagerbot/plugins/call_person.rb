@@ -2,11 +2,6 @@ require_relative('../../../_lib')
 require 'json'
 
 class CallPerson < Critic::MockedPagerDutyTest
-  def plugin
-    config = { service_id: "PFAKESRV", schedule_id: "PFAKESCHED"}
-    PagerBot::PluginManager.load_plugin "call_person", config
-  end
-
   before do
     @service = {
       id: "PFAKESRV",
@@ -21,16 +16,19 @@ class CallPerson < Critic::MockedPagerDutyTest
       .stubs(:get)
       .with("/services/PFAKESRV")
       .returns(:service => @service)
+
+    config = { service_id: "PFAKESRV", schedule_id: "PFAKESCHED"}
+    @plugin = PagerBot::PluginManager.load_plugin "call_person", config
   end
 
   describe 'Alerting people directly plugin' do
     describe 'parse' do
       it 'should ignore other queries' do
-        assert_nil(plugin.parse({command: "xxx"}))
+        assert_nil(@plugin.parse({command: "xxx"}))
       end
 
       it 'should parse query in example' do
-        got = plugin.parse({
+        got = @plugin.parse({
           command: "get",
           words: "karl subject you are needed in warroom".split
         })
@@ -39,7 +37,7 @@ class CallPerson < Critic::MockedPagerDutyTest
       end
 
       it 'should consider because the same as subject' do
-        got = plugin.parse({
+        got = @plugin.parse({
           command: "get",
           words: "someone else because you are needed in warroom".split
         })
@@ -48,7 +46,7 @@ class CallPerson < Critic::MockedPagerDutyTest
       end
 
       it 'should still parse query when an explicit "subject"/"because" prefix is not present' do
-        got = plugin.parse({
+        got = @plugin.parse({
           command: "get",
           words: "karl you are needed in warroom".split
         })
@@ -59,8 +57,6 @@ class CallPerson < Critic::MockedPagerDutyTest
 
     describe 'dispatch' do
       it 'should not error with standard responses' do
-        plug = plugin # just load it once
-
         PagerBot::PagerDuty.any_instance
           .expects(:post)
           .with { |url, params, _|
@@ -69,7 +65,7 @@ class CallPerson < Critic::MockedPagerDutyTest
           }
           .returns({})
 
-        plug
+        @plugin
           .expects(:post_incident)
           .with({
             :event_type => "trigger",
@@ -77,7 +73,7 @@ class CallPerson < Critic::MockedPagerDutyTest
             :description => "there's not enough pizza"
           })
 
-        answer = plug.dispatch({
+        answer = @plugin.dispatch({
           to: "me", subject: "there's not enough pizza"
         }, {nick: "karl"}).fetch(:message)
         assert_includes(answer, "Contacted Karl-Aksel Puulmann, see ")
@@ -85,8 +81,6 @@ class CallPerson < Critic::MockedPagerDutyTest
       end
 
       it "should look up by schedule if a person isn't found" do
-        plug = plugin # just load it once
-
         mock_sched = Object.new()
         mock_sched.stubs(:id).returns('SCHED123')
         PagerBot::PagerDuty.any_instance
@@ -107,7 +101,7 @@ class CallPerson < Critic::MockedPagerDutyTest
           }
           .returns({})
 
-        plug
+        @plugin
           .expects(:post_incident)
           .with({
             :event_type => "trigger",
@@ -115,7 +109,7 @@ class CallPerson < Critic::MockedPagerDutyTest
             :description => "there's too much pizza"
           })
 
-        answer = plug.dispatch({
+        answer = @plugin.dispatch({
           to: "sre", subject: "there's too much pizza"
         }, {nick: "karl"}).fetch(:message)
         assert_includes(answer, "Contacted Bob, see ")
@@ -136,7 +130,7 @@ class CallPerson < Critic::MockedPagerDutyTest
           .returns([])
 
         begin
-          plugin.dispatch({
+          @plugin.dispatch({
             to: "sre", subject: "the system is down, down down down down"
           }, {nick: "karl"}).fetch(:message)
         rescue => e
@@ -153,7 +147,7 @@ class CallPerson < Critic::MockedPagerDutyTest
           .returns(nil)
 
         begin
-          plugin.dispatch({
+          @plugin.dispatch({
             to: "schedule-that-doesn't-exist",
             subject: "the system is down, down down down down"
           }, {nick: "karl"}).fetch(:message)
