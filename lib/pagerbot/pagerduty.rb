@@ -12,10 +12,11 @@ module PagerBot
 
     include SemanticLogger::Loggable
 
-    def initialize(opts = {})
-      pd_config = opts
-      @subdomain = pd_config.fetch(:subdomain)
-      @api_key = pd_config.fetch(:api_key)
+    def initialize()
+      pd_config = configatron.pagerduty
+
+      @subdomain = pd_config.fetch(:subdomain, '')
+      @api_key = pd_config.fetch(:api_key, '')
 
       @users = PagerBot::Models::Collection.new(
         pd_config.fetch(:users, []), PagerBot::Models::User)

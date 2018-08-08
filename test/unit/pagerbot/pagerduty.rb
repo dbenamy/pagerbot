@@ -3,7 +3,12 @@ require_relative './mocked_pagerduty_class'
 
 class PagerDuty < Critic::MockedPagerDutyTest
   before do
-    @pagerduty = PagerBot::PagerDuty.new(@pagerduty_settings)
+    configatron.pagerduty = @pagerduty_settings
+    @pagerduty = PagerBot::PagerDuty.new()
+  end
+
+  after do
+    configatron.reset!
   end
 
   describe 'user/schedule collection' do

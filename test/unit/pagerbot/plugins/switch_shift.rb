@@ -44,8 +44,13 @@ class SwitchShiftPlugin < Critic::MockedPagerDutyTest
     @plugin_manager.load_plugins
     @plugin = @plugin_manager.loaded_plugins.fetch('switch_shift')
 
-    @pagerduty = PagerBot::PagerDuty.new(@pagerduty_settings)
+    configatron.pagerduty = @pagerduty_settings
+    @pagerduty = PagerBot::PagerDuty.new()
     PagerBot.stubs(:pagerduty).returns(@pagerduty)
+  end
+
+  after do
+    configatron.reset!
   end
 
   describe "switch shift plugin" do

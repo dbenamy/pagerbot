@@ -7,9 +7,8 @@ class ActionManager < Critic::MockedPagerDutyTest
   end
 
   before do
-    @manager = PagerBot::ActionManager.new(
-      :pagerduty => @pagerduty_settings,
-      :bot => @bot_settings)
+    configatron.pagerduty = @pagerduty_settings
+    @manager = PagerBot::ActionManager.new(:bot => @bot_settings)
     @pagerduty = @manager.instance_variable_get("@pagerduty")
 
     @fake_schedule = {
@@ -43,6 +42,10 @@ class ActionManager < Critic::MockedPagerDutyTest
       # service_url: "/services/P4UQ4A3",
       # service_key: "another-service@subdomain.pagerduty.com",
     }
+  end
+
+  after do
+    configatron.reset!
   end
 
   describe 'dispatch' do

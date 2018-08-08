@@ -82,6 +82,13 @@ module PagerBot
       PagerBot.log.info("Saving pagerduty settings. settings="+settings.to_json)
       db[:pagerduty].update_one({}, {'$set' => settings}, :upsert => true)
 
+      # AdminPage mostly writes config and doesn't need to read it, but in this
+      # case, we need to reload configatron so the pagerduty connection test
+      # sees the values just written.
+      #
+      # The circular imports here are kinda gross...
+      PagerBot.reload_configuration!
+
       response = {
         can_connect: can_connect_to_pd,
         saved: store.get_or_create('pagerduty')

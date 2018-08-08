@@ -16,11 +16,7 @@ module PagerBot
     end
 
     def get_pagerduty
-      params = db[:pagerduty].find().first
-      params = ActiveSupport::HashWithIndifferentAccess.new params
-      params[:subdomain] ||= ""
-      params[:api_key] ||= ""
-      PagerBot::PagerDuty.new(params)
+      PagerBot::PagerDuty.new()
     end
 
     # get list of collection objects (schedules, users) from pagerduty

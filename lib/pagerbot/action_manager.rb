@@ -9,7 +9,7 @@ module PagerBot
 
     def initialize(options)
       @options = options
-      @pagerduty = PagerBot::PagerDuty.new(options.fetch(:pagerduty))
+      @pagerduty = PagerBot::PagerDuty.new()
       @plugin_manager = PagerBot::PluginManager.new(options[:plugins] || {})
     end
 

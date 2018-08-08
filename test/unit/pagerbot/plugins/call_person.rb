@@ -12,7 +12,8 @@ class CallPerson < Critic::MockedPagerDutyTest
       }]
     }
 
-    @pagerduty = PagerBot::PagerDuty.new(@pagerduty_settings)
+    configatron.pagerduty = @pagerduty_settings
+    @pagerduty = PagerBot::PagerDuty.new()
     PagerBot.stubs(:pagerduty).returns(@pagerduty)
     PagerBot::PagerDuty.any_instance
       .stubs(:get)
@@ -21,6 +22,10 @@ class CallPerson < Critic::MockedPagerDutyTest
 
     config = { service_id: "PFAKESRV", schedule_id: "PFAKESCHED"}
     @plugin = PagerBot::PluginManager.load_plugin "call_person", config
+  end
+
+  after do
+    configatron.reset!
   end
 
   describe 'Alerting people directly plugin' do

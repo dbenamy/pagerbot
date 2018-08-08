@@ -91,10 +91,11 @@ if __FILE__ == $0
   SemanticLogger.default_level = ENV.fetch('LOG_LEVEL', 'info').downcase
   SemanticLogger.add_appender(io: STDERR, formatter: :color)
 
+  PagerBot.reload_configuration!
+
   if is_admin
     PagerBot::AdminPage.run!
   else
-    PagerBot.reload_configuration!
     PagerBot.log.info("Starting application", is_admin: is_admin, adapter: configatron.bot.adapter, argv: ARGV)
 
     if ARGV.include?('web') || ['slack', 'hipchat'].include?(configatron.bot.adapter)
