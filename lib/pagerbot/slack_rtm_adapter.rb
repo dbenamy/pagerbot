@@ -12,6 +12,7 @@ module PagerBot
 
     def initialize
       slack_logger = SemanticLogger::Logger.new('Slack', :warn)
+      configatron.bot.slack.api_token = ENV.fetch('SLACK_RTM_API_TOKEN') if ENV.key?('SLACK_RTM_API_TOKEN')
       @client = Slack::RealTime::Client.new(token: configatron.bot.slack.api_token, logger: slack_logger)
       @user_cache = {}
     end
