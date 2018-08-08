@@ -15,8 +15,17 @@ module PagerBot
     def initialize()
       pd_config = configatron.pagerduty
 
-      @subdomain = pd_config.fetch(:subdomain, '')
-      @api_key = pd_config.fetch(:api_key, '')
+      @subdomain = if ENV.key?('PAGERDUTY_SUBDOMAIN')
+        ENV.fetch('PAGERDUTY_SUBDOMAIN')
+      else
+        pd_config.fetch(:subdomain, '')
+      end
+
+      @api_key = if ENV.key?('PAGERDUTY_API_KEY')
+        ENV.fetch('PAGERDUTY_API_KEY')
+      else
+        pd_config.fetch(:api_key, '')
+      end
 
       @users = PagerBot::Models::Collection.new(
         pd_config.fetch(:users, []), PagerBot::Models::User)
