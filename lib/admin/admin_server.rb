@@ -47,7 +47,7 @@ module PagerBot
       end
 
       def can_connect_to_pd(pagerduty=nil)
-        pagerduty = store.get_pagerduty
+        pagerduty = PagerBot::PagerDuty.new()
         begin
           logger.measure_info "Checking pagerduty connectivity." do
             pagerduty.get('/users')
