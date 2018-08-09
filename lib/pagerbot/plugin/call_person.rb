@@ -8,7 +8,12 @@ module PagerBot::Plugins
     def initialize(config)
       @schedule_id = config.fetch(:schedule_id)
       @service_id = config.fetch(:service_id)
-      @service = pagerduty.get("/services/#{@service_id}?include%5B%5D=integrations")[:service]
+      begin
+        @service = pagerduty.get("/services/#{@service_id}?include%5B%5D=integrations")[:service]
+      rescue RuntimeError => e
+        log.error("Error loading service #{@service_id}: #{e.inspect}. Disabling CallPerson plugin.")
+        @service = nil
+      end
     end
 
     def self.manual
@@ -23,7 +28,7 @@ module PagerBot::Plugins
     end
 
     def parse(query)
-      return unless query[:command] == "get"
+      return unless @service && query[:command] == "get"
 
       to = []
       subject = []
