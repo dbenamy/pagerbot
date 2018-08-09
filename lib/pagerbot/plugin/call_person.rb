@@ -74,6 +74,8 @@ module PagerBot::Plugins
 
     +PagerBot::Utilities::DispatchMethod
     def dispatch(query, event_data)
+      raise RuntimeError.new("Subject is required") if query[:subject].empty?
+
       # hacky flow since API doesn't support creating an incident directly
       # against a user:
       # - put person on call on schedule for 5 minutes
