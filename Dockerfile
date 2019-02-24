@@ -1,6 +1,6 @@
 FROM ruby:2.5
 
-RUN apt-get update; apt-get install libgmp3-dev openssl libssl-dev --assume-yes
+RUN apt-get update; apt-get install daemontools libgmp3-dev openssl libssl-dev --assume-yes
 RUN mkdir /pagerbot
 
 WORKDIR /pagerbot
