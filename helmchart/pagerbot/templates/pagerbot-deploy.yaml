@@ -16,9 +16,6 @@ spec:
     spec:
       containers:
       - args:
-        - rerun
-        - -b
-        - --
         - ruby
         - lib/pagerbot.rb
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
