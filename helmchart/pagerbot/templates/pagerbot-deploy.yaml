@@ -28,7 +28,5 @@ spec:
             value: "debug"
           - name: MONGODB_URI
             value: "mongodb://mongo:27017/pagerbot"
-          - name: DEPLOYED
-            value: "{{ .Values.pagerbot.deployed }}"
       restartPolicy: Always
 

@@ -14,18 +14,18 @@ Sample
 Usage
 ======
 
-The easiest way to test this project out is to use `minikube` on your local machine. This projects wraps the deployment of pagerbot using `helm` and allow you to run the bot with the following command, once helm is initialized: 
+The easiest way to test this project out is to use `minikube` on your local machine. This projects wraps the deployment of pagerbot using `helm` and allow you to run the bot with the following command, once helm is initialized:
 
 ```
 helm install .  --name pagerbot
 ```
 
-This command deploys three services to your kubernetes cluster.  
+This command deploys three services to your kubernetes cluster.
 
-* pagerbot  
+* pagerbot
   * this is the bot itself
 * pagerbot-admin
-  * this is the administration panel, for setting up integration with pagerduty and slack, etc.
+  * this is the administration panel, for setting up integration with pagerduty and slack, etc. by default it'll be disabled.
 * mongo
   * data store used for storing configurations
 
@@ -94,19 +94,14 @@ Install the chart:
 ```
 helm install .  --name pagerbot
 ```
-To open the admin page, port-forward the pagerbot-admin webapp to your localhost:4567:
+To open the admin page:
 ```
+kubectl scale --replicas=1 deploy pagerbot-admin
 kubectl port-forward <pagerbot-admin-*> 4567:4567
 ```
-After completing the configuration in the admin panel, update the values.yaml file with `deployed: true`
+After completing the configuration in the admin panel:
 ```
-pagerbot:
-  name: pagerbot
-  deployed: true
-```
-and lastly upgrade the deployment:
-```
-helm upgrade pagerbot .
+kubectl scale --replicas=0 deploy pagerbot-admin
 ```
 
 FAQ

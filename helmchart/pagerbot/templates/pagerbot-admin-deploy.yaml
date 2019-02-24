@@ -6,7 +6,7 @@ metadata:
   name: {{ .Values.pagerbotAdmin.name }}
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: 1
+  replicas: {{ .Values.pagerbotAdmin.replicas }}
   strategy:
     type: Recreate
   template:
