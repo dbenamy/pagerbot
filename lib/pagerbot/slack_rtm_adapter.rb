@@ -40,7 +40,9 @@ module PagerBot
 
       @client.on :closed do |data|
         logger.info "Closed connection to chat.", data: data
+        abort("Disconnected")
       end
+
       @client.start!
     end
 
